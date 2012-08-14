@@ -2,10 +2,9 @@
  * Converts bemjson to html. Use it with BEM.JSON
  *
  * @name BEM.HTML
- * @requires BEM.JSON
  */
 
-if ('undefined' === typeof BEM) {
+if (typeof BEM === 'undefined') {
     BEM = {};
 }
 (function (BEM) {

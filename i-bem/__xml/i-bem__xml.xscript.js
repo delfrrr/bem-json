@@ -232,7 +232,7 @@ if ('undefined' === typeof BEM) {
             params.map(function(param) {
                 defineNamespace(param, ns);
             });
-        } else if (null !== params && 'object' === typeof params) {
+        } else if (params !== null && typeof params === 'object') {
             for (i in ns) {
                 if (ns.hasOwnProperty(i)) {
                     params[i] = ns[i];
@@ -273,16 +273,16 @@ if ('undefined' === typeof BEM) {
                     xml.push((new Ctx(decl[i])).build());
                 }
                 xml = xml.join('');
-            } else if (null === decl || undefined === decl) {
+            } else if (decl === null ||  decl === undefined) {
                 xml = '';
-            } else if ('object' === typeof decl) {
+            } else if (typeof decl === 'object') {
                 for (attrName in decl) {
                     if (decl.hasOwnProperty(attrName)) {
                         // build xml for known attributes
                         if (_attrBuildersMap[attrName]) {
                             this.callBuilder(_attrBuildersMap[attrName], [attrName]);
                         // build xml for unknown attributes
-                        } else if (-1 === _attrIgnoreList.indexOf(attrName)) {
+                        } else if (_attrIgnoreList.indexOf(attrName) === -1) {
                             this.callBuilder(_attrDefaultBuilder, [attrName]);
                         }
                     }
@@ -316,7 +316,7 @@ if ('undefined' === typeof BEM) {
          */
         addNodeAttr: function(attr, value, ns) {
             value = String(value);
-            if (-1 !== value.indexOf('"')) {
+            if (value.indexOf('"') !== -1) {
                 value = xscript.xmlescape(value);
             }
             this._currXmlData.nodeAttrs.push(
