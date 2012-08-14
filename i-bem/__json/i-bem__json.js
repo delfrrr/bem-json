@@ -26,7 +26,7 @@ if (typeof BEM === 'undefined') {
         },
         class2type = {},
         type =  function(obj) {
-            return !obj ?
+            return obj === null || typeof(obj) === 'undefined' ?
                 String( obj ) :
                 class2type[Object.prototype.toString.call(obj)] || "object";
         },
@@ -55,14 +55,14 @@ if (typeof BEM === 'undefined') {
             for ( ; i < length; i++ ) {
                 // Only deal with non-null/undefined values
                 options = arguments[i];
-                if ( options !== null ) {
+                if (options !== null) {
                     // Extend the base object
                     for ( name in options ) {
                         if (options.hasOwnProperty(name)) {
                             src = target[ name ];
                             copy = options[ name ];
                             // Prevent never-ending loop
-                            if ( target !== copy ) {
+                            if (target !== copy) {
                                 target[ name ] = copy;
                             }
                         }
@@ -202,12 +202,12 @@ if (typeof BEM === 'undefined') {
          */
         param: function (name, val, force, needExtend) {
             var params = this._params;
-            if(typeof val === 'undefined'){
+            if (typeof val === 'undefined') {
                 return params[name];
             }
             if (force || !(params.hasOwnProperty(name))) {
                 params[name] = val;
-            } else if(needExtend) {
+            } else if (needExtend) {
                 params[name] = extend(val, params[name]);
             }
             return this;
@@ -308,7 +308,7 @@ if (typeof BEM === 'undefined') {
         mix: function(val, force) {
             var params = this._params;
 
-            if(typeof val === 'undefined') {
+            if (typeof val === 'undefined') {
                 return params.mix;
             }
 
