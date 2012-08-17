@@ -315,10 +315,7 @@ if ('undefined' === typeof BEM) {
          * @param {String} ns. optional. Additional ns for an attribute
          */
         addNodeAttr: function(attr, value, ns) {
-            value = String(value);
-            if (value.indexOf('"') !== -1) {
-                value = xscript.xmlescape(value);
-            }
+            value = xscript.xmlescape(String(value));
             this._currXmlData.nodeAttrs.push(
                 [ns || '', attr, '="', value, '"'].join('')
             );
