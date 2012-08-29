@@ -116,7 +116,10 @@ if (typeof BEM === 'undefined') {
         this._siblingsCount = siblingsCount || 1;
         this._isStopped = false;
         this._isRemoved = false;
-        if (params.block) {
+        if (
+            params.block &&
+            !(params.elem && currBlock && currBlock.block === params.block)//element form same block as current
+        ) {
             this._currBlock = params;
         }
     };
@@ -276,7 +279,7 @@ if (typeof BEM === 'undefined') {
          * @param {Boolean} [force=false] set HTML attributes, even if they exists
          */
         attrs: function(val, force) {
-            return this.param('attrs', val, force);
+            return this.param('attrs', val, force, true);
         },
 
         /**
