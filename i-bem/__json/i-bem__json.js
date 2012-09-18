@@ -124,6 +124,17 @@ if (typeof BEM === 'undefined') {
         }
     };
     Ctx.prototype = {
+
+        _buildWithNewCtx: function (params, pos, siblingsCount, currBlock, tParams) {
+            return (new Ctx(
+                params,
+                pos,
+                siblingsCount,
+                currBlock,
+                tParams
+            )).build();
+        },
+
         /**
         * Recursive init Ctx for inner elements
         *
@@ -143,13 +154,13 @@ if (typeof BEM === 'undefined') {
                 ) {
                     currBlock = this._currBlock;
                 }
-                return (new Ctx(
+                return this._buildWithNewCtx(
                     params,
                     pos,
                     siblingsCount,
                     currBlock,
                     this._tParams && extend({}, this._tParams)
-                )).build();
+                );
             }
             return params;
         },
@@ -424,6 +435,28 @@ if (typeof BEM === 'undefined') {
         },
 
         /**
+         * Continue building bem block/element
+         */
+        _buildBem: function () {
+            var params = this._params;
+            //remove
+            if (this._isRemoved) {
+                this._params = null;
+                return;
+            }
+            //build content
+            this._params.content = this._buildInner(params.content, 1, 1);
+
+            //build wraper
+            if (params._wrapper) {
+                params =  this._buildInner(params._wrapper, 1, 1);
+            }
+
+            this._params = params;
+
+        },
+
+        /**
          * Applies block declarations to context
          *
          * @return {Object} bemjson object
@@ -456,18 +489,9 @@ if (typeof BEM === 'undefined') {
                         }
                     }
                 }
-
-                //remove
-                if (this._isRemoved) {
-                    return null;
-                }
-                //build content
-                params.content = this._buildInner(params.content, 1, 1);
-
-                //build wraper
-                if (params._wrapper) {
-                    params =  this._buildInner(params._wrapper, 1, 1);
-                }
+                this._params = params;
+                this._buildBem();
+                params = this._params;
             } else if (isArray(params)) { //build array
                 params = params.map(function (param, pos) {
                     return ctx._buildInner(param, pos+1, params.length); //pos start from 1
@@ -479,6 +503,9 @@ if (typeof BEM === 'undefined') {
         }
     };
     BEM.JSON = {
+
+        _ctx: Ctx,
+
         /**
          * Set declarations
          *
