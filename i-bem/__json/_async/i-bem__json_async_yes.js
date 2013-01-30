@@ -23,7 +23,21 @@
         if (this._threads === 0) {
             this._buildBemSync();
         }
-    }
+    };
+
+    BEM.JSON._ctx.prototype._runDecls = function () {
+        if (this._fns.length && !this._isStopped && this._threads === 0) {
+            try {
+                this._fns.shift()(this);
+            } catch (err) {
+                this.remove();
+                this._declErrorHandler(err);
+                return;
+            }
+
+            this._runDecls();
+        }
+    };
 
     /**
      * Resume building blocks
@@ -35,8 +49,9 @@
         } else {
             throw new Error('Cant resume in synchronous build');
         }
+        this._runDecls();
         this._buildBem();
-        if(this._globalThread.count === 0) {
+        if (this._globalThread.count === 0) {
             this._globalThread.callback();
         }
     };

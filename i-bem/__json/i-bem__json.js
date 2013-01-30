@@ -17,23 +17,23 @@ if (typeof BEM === 'undefined') {
         buildDeclFn = function (fn, desc, props) {
             return desc.modName ?
                    function (ctx) {
-                       //FIXME: do not apply when declaration has no modVal but have modName
-                       if (ctx._currBlock.mods && ctx._currBlock.mods[desc.modName] === desc.modVal) {
-                           fn.call(props, ctx);
-                       }
-                   } :
-                   fn.bind(props);
+                        //FIXME: do not apply when declaration has no modVal but have modName
+                        if (ctx._currBlock.mods && ctx._currBlock.mods[desc.modName] === desc.modVal) {
+                            fn.call(props, ctx);
+                        }
+                    } :
+                    fn.bind(props);
         },
         class2type = {},
-        type =  function(obj) {
+        type =  function (obj) {
             return obj === null || typeof(obj) === 'undefined' ?
-                String( obj ) :
+                String(obj) :
                 class2type[Object.prototype.toString.call(obj)] || "object";
         },
         isFunction = function (fn) {
             return (typeof fn === 'function');
         },
-        isArray =  Array.isArray || function( obj ) {
+        isArray =  Array.isArray || function (obj) {
             return type(obj) === "array";
         },
         isBem = function (obj) {
@@ -52,18 +52,18 @@ if (typeof BEM === 'undefined') {
                 i = 1,
                 length = arguments.length;
 
-            for ( ; i < length; i++ ) {
+            for (; i < length; i++) {
                 // Only deal with non-null/undefined values
                 options = arguments[i];
                 if (options !== null) {
                     // Extend the base object
-                    for ( name in options ) {
+                    for (name in options) {
                         if (options.hasOwnProperty(name)) {
-                            src = target[ name ];
-                            copy = options[ name ];
+                            src = target[name];
+                            copy = options[name];
                             // Prevent never-ending loop
                             if (target !== copy) {
-                                target[ name ] = copy;
+                                target[name] = copy;
                             }
                         }
                     }
@@ -94,7 +94,7 @@ if (typeof BEM === 'undefined') {
 
     //define class2type
     ['Boolean', 'Number', 'String', 'Function', 'Array', 'Date', 'RegExp', 'Object'].forEach(function (name) {
-        class2type[ "[object " + name + "]" ] = name.toLowerCase();
+        class2type["[object " + name + "]"] = name.toLowerCase();
     });
 
     /**
@@ -170,7 +170,7 @@ if (typeof BEM === 'undefined') {
          *
          * @returns {Number}
          */
-        pos: function() {
+        pos: function () {
             return this._pos;
         },
 
@@ -179,7 +179,7 @@ if (typeof BEM === 'undefined') {
          *
          * @returns {Boolean}
          */
-        isFirst: function() {
+        isFirst: function () {
             return this._pos === 1;
         },
 
@@ -188,7 +188,7 @@ if (typeof BEM === 'undefined') {
          *
          * @returns {Boolean}
          */
-        isLast: function() {
+        isLast: function () {
             return this._pos === this._siblingsCount;
         },
 
@@ -197,7 +197,7 @@ if (typeof BEM === 'undefined') {
          *
          * @param {Object} [params] params
          */
-        params: function(params) {
+        params: function (params) {
             if (typeof params === 'undefined') {
                 return this._params;
             }
@@ -243,7 +243,7 @@ if (typeof BEM === 'undefined') {
          * @param {Object} [val] modifiers
          * @param {Boolean} [force=false] set modifiers, even if it exists
          */
-        mods: function(val, force) {
+        mods: function (val, force) {
             return this.param('mods', val, force, true);
         },
 
@@ -268,7 +268,7 @@ if (typeof BEM === 'undefined') {
          * @param {String} [val] modifier value
          * @param {Boolean} [force=false] set modifier, even if it exists
          */
-        mod: function() {
+        mod: function () {
             return this._property('mods', arguments);
         },
 
@@ -279,7 +279,7 @@ if (typeof BEM === 'undefined') {
          * @param {String} [val] attribute value
          * @param {Boolean} [force=false] set attribute, even if it exists
          */
-        attr: function() {
+        attr: function () {
             return this._property('attrs', arguments);
         },
 
@@ -289,7 +289,7 @@ if (typeof BEM === 'undefined') {
          * @param {Object} [val] HTML attributes
          * @param {Boolean} [force=false] set HTML attributes, even if they exists
          */
-        attrs: function(val, force) {
+        attrs: function (val, force) {
             return this.param('attrs', val, force, true);
         },
 
@@ -299,7 +299,7 @@ if (typeof BEM === 'undefined') {
          * @param {String} [val] tag name
          * @param {Boolean} [force=false] set tag, even if it exists
          */
-        tag: function(val, force) {
+        tag: function (val, force) {
             return this.param('tag', val, force);
         },
 
@@ -309,7 +309,7 @@ if (typeof BEM === 'undefined') {
          * @param {String} [val] class name
          * @param {Boolean} [force=false] set additional class, even if it exists
          */
-        cls: function(val, force) {
+        cls: function (val, force) {
             return this.param('cls', val, force);
         },
 
@@ -319,7 +319,7 @@ if (typeof BEM === 'undefined') {
          * @param {Array} [val] array with blocks and elements to mix
          * @param {Boolean} [force=false] set mix, even if it exists; otherwise add mixes
          */
-        mix: function(val, force) {
+        mix: function (val, force) {
             var params = this._params;
 
             if (typeof val === 'undefined') {
@@ -343,7 +343,7 @@ if (typeof BEM === 'undefined') {
          * @param {Boolean} [force=false] set js params, even if it exists
          */
         js: function (val) {
-          return this.param('js', val);
+            return this.param('js', val);
         },
 
 
@@ -405,7 +405,7 @@ if (typeof BEM === 'undefined') {
         tParam: function (name, val) {
             var tParams = this._tParams = this._tParams || {};
             if (typeof val === 'undefined') {
-                 return tParams[name];
+                return tParams[name];
             }
             tParams[name] = val;
             return this;
@@ -416,21 +416,21 @@ if (typeof BEM === 'undefined') {
          *
          * returns {String}
          */
-        generateId: function() {
+        generateId: function () {
             return identify();
         },
 
         /**
          * Stop the execution of the basic patterns
          */
-        stop: function() {
+        stop: function () {
             this._isStopped = true;
         },
 
         /**
          * Remove bem object
          */
-        remove: function() {
+        remove: function () {
             this._isRemoved = true;
         },
 
@@ -464,7 +464,7 @@ if (typeof BEM === 'undefined') {
         build: function () {
             var params = this._params,
                 ctx = this,
-                decl, fns, i;
+                decl;
             if (params._wrapper) { //obj was processed before and wraped
                 delete params._wrapper;
                 return params;
@@ -472,34 +472,52 @@ if (typeof BEM === 'undefined') {
             if (params.block || params.elem) { //build bem obj
                 decl = this._currBlock && decls[this._currBlock.block];
                 if (decl) {
+                    this._fns = [];
                     if (params.elem) {
-                        fns = decl['_elem' + ELEM_DELIM + params.elem];
-                        if (decl._elem) {
-                            fns = fns ? fns.concat(decl._elem) : decl._elem;
-                        }
+                        this._fns.push.apply(this._fns, decl['_elem' + ELEM_DELIM + params.elem] || []);
+                        this._fns.push.apply(this._fns, decl['_elem'] || []);
                     } else {
-                        fns = decl._block;
+                        this._fns.push.apply(this._fns, decl._block || []);
                     }
-                    if (fns) {
-                        for (i = 0; i < fns.length; i++){
-                            fns[i](this);
-                            if (this._isStopped) {
-                                break;
-                            }
-                        }
-                    }
+                    this._runDecls();
                 }
-                this._params = params;
                 this._buildBem();
                 params = this._params;
             } else if (isArray(params)) { //build array
                 params = params.map(function (param, pos) {
-                    return ctx._buildInner(param, pos+1, params.length); //pos start from 1
+                    return ctx._buildInner(param, pos + 1, params.length); //pos start from 1
                 });
             } else if (params.content) { //some object with content
                 params.content = this._buildInner(params.content, 1, 1);
             }
             return params;
+        },
+
+        /**
+         * call chain of declarations for block or element
+         */
+        _runDecls: function () {
+            var i;
+            if (this._fns.length) {
+                try {
+                    for (i = 0; i < this._fns.length; i++) {
+                        this._fns[i](this);
+                        if (this._isStopped) {
+                            break;
+                        }
+                    }
+                } catch (err) {
+                    this.remove();
+                    this._declErrorHandler(err);
+                }
+            }
+        },
+
+        /**
+         * Default handler for errors in decls
+         */
+        _declErrorHandler: function (err) {
+            console.error(err);
         }
     };
     BEM.JSON = {

@@ -1,4 +1,5 @@
-BEM.TEST.decl({block: 'i-bem', elem: 'json', modName: 'async', modVal: 'yes'}, function () {
+describe('__async bem-json', function () {
+
     it('declaration', function () {
         expect(BEM.JSON.buildAsync).toBeDefined();
     });
@@ -225,5 +226,63 @@ BEM.TEST.decl({block: 'i-bem', elem: 'json', modName: 'async', modVal: 'yes'}, f
         });
 
     });
+
+    it('wait for processing decls', function () {
+        var json;
+
+        BEM.JSON.decl({name:'b-test', modName: 'common-for', modVal: 'wait-for-decls'}, {
+            onBlock: function (ctx) {
+                ctx.content([
+                    String(ctx.params().someParam),
+                    {elem: 'item'}
+                ]);
+            },
+            onElem: {
+                'item': function (ctx) {
+                    ctx.wait();
+                    setTimeout(function () {
+                        ctx.beforeContent('async-item-content');
+                        ctx.resume();
+                    }, 100);
+
+                }
+            }
+        });
+
+        BEM.JSON.decl({name:'b-test', modName: 'test', modVal: 'wait-for-decls'}, {
+            onBlock: function (ctx) {
+                ctx.wait();
+                setTimeout(function () {
+                    ctx.params().someParam = 'async-content';
+                    ctx.resume();
+                }, 100);
+            },
+            onElem: {
+                'item': function (ctx) {
+                    ctx.content('sync-item-content');
+                }
+            }
+        });
+
+        BEM.JSON.buildAsync({block: 'b-test', mods: {test: 'wait-for-decls', 'common-for': 'wait-for-decls'}}, function (jsonParam) {
+            json = jsonParam;
+        });
+
+        waitsFor(function () {
+            return json;
+        }, 'json never builded', 1000);
+
+        runs(function () {
+            expect(json).toBeDefined();
+            expect(json.content).toBeDefined();
+            expect(json.content[0]).toBe('async-content');
+            expect(json.content[1]).toBeDefined();
+            expect(json.content[1].content).toBeDefined();
+            expect(json.content[1].content[0]).toBe('async-item-content');
+            expect(json.content[1].content[1]).toBe('sync-item-content');
+        });
+
+    });
+
 
 });
