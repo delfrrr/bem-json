@@ -432,27 +432,42 @@ if (typeof BEM === 'undefined') {
          */
         remove: function () {
             this._isRemoved = true;
+            this.stop();
         },
 
         /**
          * Continue building bem block/element
          */
         _buildBem: function () {
-            var params = this._params;
+            var params = this._params,
+                parent = params._parent;
+            delete params._parent;
+
             //remove
             if (this._isRemoved) {
+                if (parent) {
+                    parent.content = null;
+                }
                 this._params = null;
                 return;
             }
+
+            //add link to parent for remove
+            if (isBem(params.content)) {
+                params.content._parent = params;
+            }
+
             //build content
-            this._params.content = this._buildInner(params.content, 1, 1);
+            params.content = this._buildInner(params.content, 1, 1);
 
             //build wraper
             if (params._wrapper) {
-                params =  this._buildInner(params._wrapper, 1, 1);
-            }
+                this._params =  this._buildInner(params._wrapper, 1, 1);
+                if (parent) {
+                    parent.content = this._params;
+                }
 
-            this._params = params;
+            }
 
         },
 

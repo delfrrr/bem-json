@@ -1,3 +1,4 @@
+/*global describe: false, it: false, waitsFor: false, runs: false, expect: false */
 describe('__async bem-json', function () {
 
     it('declaration', function () {
@@ -39,12 +40,12 @@ describe('__async bem-json', function () {
     it('process async bemjson', function () {
         var json;
 
-        BEM.JSON.decl({name:'b-test', modName: 'test', modVal: 'async'}, {
+        BEM.JSON.decl({name: 'b-test', modName: 'test', modVal: 'async'}, {
             onBlock: function (ctx) {
                 ctx.wait();
                 setTimeout(function () {
-                   ctx.content('async content', true);
-                   ctx.resume();
+                    ctx.content('async content', true);
+                    ctx.resume();
                 }, 100);
             }
         });
@@ -67,13 +68,13 @@ describe('__async bem-json', function () {
     it('process async multiple elems', function () {
         var json;
 
-        BEM.JSON.decl({name:'b-test', modName: 'test', modVal: 'multiple-elems'}, {
+        BEM.JSON.decl({name: 'b-test', modName: 'test', modVal: 'multiple-elems'}, {
             onBlock: function (ctx) {
-               ctx.content([
-                   {elem: 'item-sync'},
-                   {elem: 'item-async', timeout: 100},
-                   {elem: 'item-async', timeout: 200, mods: {'async-param': 'yes'}}
-               ], true);
+                ctx.content([
+                    {elem: 'item-sync'},
+                    {elem: 'item-async', timeout: 100},
+                    {elem: 'item-async', timeout: 200, mods: {'async-param': 'yes'}}
+                ], true);
             },
             onElem: {
                 'item-sync': function (ctx) {
@@ -123,13 +124,13 @@ describe('__async bem-json', function () {
     it('process async multiple elems', function () {
         var json;
 
-        BEM.JSON.decl({name:'b-test', modName: 'test', modVal: 'multiple-elems'}, {
+        BEM.JSON.decl({name: 'b-test', modName: 'test', modVal: 'multiple-elems'}, {
             onBlock: function (ctx) {
-               ctx.content([
-                   {elem: 'item-sync'},
-                   {elem: 'item-async', timeout: 100},
-                   {elem: 'item-async', timeout: 200, mods: {'async-param': 'yes'}}
-               ], true);
+                ctx.content([
+                    {elem: 'item-sync'},
+                    {elem: 'item-async', timeout: 100},
+                    {elem: 'item-async', timeout: 200, mods: {'async-param': 'yes'}}
+                ], true);
             },
             onElem: {
                 'item-sync': function (ctx) {
@@ -179,24 +180,24 @@ describe('__async bem-json', function () {
     it('process async for nested blocks', function () {
         var json;
 
-        BEM.JSON.decl({name:'b-test', modName: 'test', modVal: 'nested-blocks'}, {
+        BEM.JSON.decl({name: 'b-test', modName: 'test', modVal: 'nested-blocks'}, {
             onBlock: function (ctx) {
-               ctx.content({elem: 'item'}, true);
+                ctx.content({elem: 'item'}, true);
             },
             onElem: {
                 'item': function (ctx) {
                     ctx.wait();
                     setTimeout(function () {
-                        ctx.content({block: 'b-test', mods: {nested: 'yes'}}, true)
+                        ctx.content({block: 'b-test', mods: {nested: 'yes'}}, true);
                         ctx.resume();
                     }, 100);
-                },
+                }
             }
         });
 
-        BEM.JSON.decl({name:'b-test', modName: 'nested', modVal: 'yes'}, {
+        BEM.JSON.decl({name: 'b-test', modName: 'nested', modVal: 'yes'}, {
             onBlock: function (ctx) {
-               ctx.content({elem: 'item'}, true);
+                ctx.content({elem: 'item'}, true);
             },
             onElem: {
                 'item': function (ctx) {
@@ -205,7 +206,7 @@ describe('__async bem-json', function () {
                         ctx.content('async-content', true);
                         ctx.resume();
                     }, 100);
-                },
+                }
             }
         });
 
@@ -230,7 +231,7 @@ describe('__async bem-json', function () {
     it('wait for processing decls', function () {
         var json;
 
-        BEM.JSON.decl({name:'b-test', modName: 'common-for', modVal: 'wait-for-decls'}, {
+        BEM.JSON.decl({name: 'b-test', modName: 'common-for', modVal: 'wait-for-decls'}, {
             onBlock: function (ctx) {
                 ctx.content([
                     String(ctx.params().someParam),
@@ -249,7 +250,7 @@ describe('__async bem-json', function () {
             }
         });
 
-        BEM.JSON.decl({name:'b-test', modName: 'test', modVal: 'wait-for-decls'}, {
+        BEM.JSON.decl({name: 'b-test', modName: 'test', modVal: 'wait-for-decls'}, {
             onBlock: function (ctx) {
                 ctx.wait();
                 setTimeout(function () {
@@ -283,6 +284,77 @@ describe('__async bem-json', function () {
         });
 
     });
+
+    it('async remove', function () {
+        var json;
+
+
+        BEM.JSON.decl({name: 'b-test', modName: 'test', modVal: 'async-remove'}, {
+            onBlock: function (ctx) {
+                ctx.content({elem: 'item', content: 'test string'}, true);
+            },
+            onElem: function (ctx) {
+                ctx.wait();
+                setTimeout(function () {
+                    ctx.remove();
+                    ctx.resume();
+                }, 100);
+            }
+        });
+
+        BEM.JSON.buildAsync({block: 'b-test', mods: {test: 'async-remove'}}, function (jsonParam) {
+            json = jsonParam;
+        });
+
+        waitsFor(function () {
+            return json;
+        }, 'json never builded', 1000);
+
+        runs(function () {
+            expect(json).toBeDefined();
+            expect(json.content).toBe(null);
+        });
+
+    });
+
+    it('async wrap', function () {
+        var json;
+
+
+        BEM.JSON.decl({name: 'b-test-wrap', modName: 'test', modVal: 'async-wrap'}, {
+            onBlock: function (ctx) {
+                ctx.content({elem: 'item', content: 'test string'}, true);
+            },
+            onElem: {
+                'item': function (ctx) {
+                    ctx.wait();
+                    setTimeout(function () {
+                        ctx.wrap({elem: 'item-wraper', block: 'b-test-wrap'});
+                        ctx.resume();
+                    }, 100);
+                }
+            }
+        });
+
+        BEM.JSON.buildAsync({block: 'b-test-wrap', mods: {test: 'async-wrap'}}, function (jsonParam) {
+            json = jsonParam;
+        });
+
+        waitsFor(function () {
+            return json;
+        }, 'json never builded', 1000);
+
+        runs(function () {
+            expect(json).toBeDefined();
+            expect(json.content).toBeDefined();
+            expect(json.content.elem).toBe('item-wraper');
+            expect(json.content.content).toBeDefined();
+            expect(json.content.content.elem).toBe('item');
+            expect(json.content.content.content).toBe('test string');
+        });
+
+    });
+
 
 
 });
