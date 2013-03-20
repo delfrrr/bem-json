@@ -2,7 +2,7 @@
   "author": "Vova Bilonenko",
   "name": "bem-json",
   "description": "Template engine for BEM",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/delfrrr/bem-json.git"

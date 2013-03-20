@@ -149,7 +149,6 @@ if (typeof BEM === 'undefined') {
                 paramsType = type(params);
             if (parent && isBem(params)) {
                 params._parent = parent;
-                params._pos = pos;
             }
             if (paramsType === 'object' || paramsType === 'array') {
                 if (
@@ -452,8 +451,8 @@ if (typeof BEM === 'undefined') {
                 //remove from parent
                 if (parent) {
                     //remove from array
-                    if (isArray(parent) && this._params._pos) {
-                        parent[this._params._pos - 1] = null;
+                    if (isArray(parent)) {
+                        parent[this._pos - 1] = null;
                     } else if (parent.content) { //remove from parent.content
                         parent.content = null;
                     }
@@ -471,7 +470,11 @@ if (typeof BEM === 'undefined') {
             if (params._wrapper) {
                 this._params =  this._buildInner(params._wrapper, 1, 1, parent);
                 if (parent) {
-                    parent.content = this._params;
+                    if (isArray(parent)) {
+                        parent[this._pos - 1] = this._params;
+                    } else if (parent.content) {
+                        parent.content = this._params;
+                    }
                 }
 
             }
