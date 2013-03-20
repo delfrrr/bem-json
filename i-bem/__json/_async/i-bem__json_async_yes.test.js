@@ -317,6 +317,45 @@ describe('__async bem-json', function () {
 
     });
 
+    it('async remove from array', function () {
+        var json;
+
+
+        BEM.JSON.decl({name: 'b-test', modName: 'test', modVal: 'async-remove-from-arr'}, {
+            onBlock: function (ctx) {
+                ctx.content([
+                    {elem: 'item', content: 'test string'},
+                    {elem: 'item2', content: 'test string'}
+                ], true);
+            },
+            onElem: {
+                'item': function (ctx) {
+                    ctx.wait();
+                    setTimeout(function () {
+                        ctx.remove();
+                        ctx.resume();
+                    }, 100);
+                }
+            }
+        });
+
+        BEM.JSON.buildAsync({block: 'b-test', mods: {test: 'async-remove-from-arr'}}, function (jsonParam) {
+            json = jsonParam;
+        });
+
+        waitsFor(function () {
+            return json;
+        }, 'json never builded', 1000);
+
+        runs(function () {
+            expect(json).toBeDefined();
+            expect(json.content).toBeDefined();
+            expect(json.content[0]).toBe(null);
+            expect(json.content[1].content).toBe('test string');
+        });
+
+    });
+
     it('async wrap', function () {
         var json;
 

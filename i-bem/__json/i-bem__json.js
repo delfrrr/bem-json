@@ -144,9 +144,13 @@ if (typeof BEM === 'undefined') {
         * @param {number} [siblingsCount] amount of elents in parent content
         * @return {*} bemjson
         */
-        _buildInner: function (params, pos, siblingsCount) {
+        _buildInner: function (params, pos, siblingsCount, parent) {
             var currBlock,
                 paramsType = type(params);
+            if (parent && isBem(params)) {
+                params._parent = parent;
+                params._pos = pos;
+            }
             if (paramsType === 'object' || paramsType === 'array') {
                 if (
                     (!params.block) || //not block (elem or array)
@@ -445,24 +449,27 @@ if (typeof BEM === 'undefined') {
 
             //remove
             if (this._isRemoved) {
+                //remove from parent
                 if (parent) {
-                    parent.content = null;
+                    //remove from array
+                    if (isArray(parent) && this._params._pos) {
+                        parent[this._params._pos - 1] = null;
+                    } else if (parent.content) { //remove from parent.content
+                        parent.content = null;
+                    }
                 }
+                //remove param
                 this._params = null;
                 return;
             }
 
-            //add link to parent for remove
-            if (isBem(params.content)) {
-                params.content._parent = params;
-            }
 
             //build content
-            params.content = this._buildInner(params.content, 1, 1);
+            params.content = this._buildInner(params.content, 1, 1, params);
 
             //build wraper
             if (params._wrapper) {
-                this._params =  this._buildInner(params._wrapper, 1, 1);
+                this._params =  this._buildInner(params._wrapper, 1, 1, parent);
                 if (parent) {
                     parent.content = this._params;
                 }
@@ -499,11 +506,14 @@ if (typeof BEM === 'undefined') {
                 this._buildBem();
                 params = this._params;
             } else if (isArray(params)) { //build array
-                params = params.map(function (param, pos) {
-                    return ctx._buildInner(param, pos + 1, params.length); //pos start from 1
+                params.forEach(function (param, pos) {
+                    params[pos] = ctx._buildInner(param, pos + 1, params.length, params); //pos start from 1
                 });
+                // params = params.map(function (param, pos) {
+                //     return ctx._buildInner(param, pos + 1, params.length, params); //pos start from 1
+                // });
             } else if (params.content) { //some object with content
-                params.content = this._buildInner(params.content, 1, 1);
+                params.content = this._buildInner(params.content, 1, 1, params);
             }
             return params;
         },
