@@ -126,6 +126,7 @@ if (typeof BEM === 'undefined') {
     Ctx.prototype = {
 
         _buildWithNewCtx: function (params, pos, siblingsCount, currBlock, tParams) {
+
             return (new Ctx(
                 params,
                 pos,
@@ -134,6 +135,7 @@ if (typeof BEM === 'undefined') {
                 tParams
             )).build();
         },
+
 
         /**
         * Recursive init Ctx for inner elements
@@ -162,7 +164,8 @@ if (typeof BEM === 'undefined') {
                     pos,
                     siblingsCount,
                     currBlock,
-                    this._tParams && extend({}, this._tParams)
+                    this._tParams && extend({}, this._tParams),
+                    paramsType
                 );
             }
             return params;
@@ -512,9 +515,6 @@ if (typeof BEM === 'undefined') {
                 params.forEach(function (param, pos) {
                     params[pos] = ctx._buildInner(param, pos + 1, params.length, params); //pos start from 1
                 });
-                // params = params.map(function (param, pos) {
-                //     return ctx._buildInner(param, pos + 1, params.length, params); //pos start from 1
-                // });
             } else if (params.content) { //some object with content
                 params.content = this._buildInner(params.content, 1, 1, params);
             }
@@ -549,6 +549,8 @@ if (typeof BEM === 'undefined') {
         }
     };
     BEM.JSON = {
+
+        _decls: decls,
 
         _ctx: Ctx,
 

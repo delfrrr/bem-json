@@ -3,6 +3,7 @@
  *
  * @name BEM.JSON
 */
+var count = 0;
 (function (BEM) {
 
     /**
@@ -56,17 +57,41 @@
         }
     };
 
-    BEM.JSON._ctx.prototype._buildWithNewCtx = function (params, pos, siblingsCount, currBlock, tParams) {
-        var ctx = new BEM.JSON._ctx(
-            params,
-            pos,
-            siblingsCount,
-            currBlock,
-            tParams
-        );
-        ctx._globalThread = this._globalThread;
-        ctx._threads = 0;
-        return ctx.build();
+    BEM.JSON._ctx.prototype._findDecls = function (params, currBlock) {
+        var block = params.block || (currBlock && currBlock.block),
+            elem = params.elem,
+            decl = block && BEM.JSON._decls[block];
+        if (decl) {
+            if (block && elem) {
+                return Boolean(decl._elem || decl['_elem__' + elem]);
+            } else {
+                return Boolean(decl._block);
+            }
+        } else {
+            return false;
+        }
+    };
+
+
+    BEM.JSON._ctx.prototype._buildWithNewCtx = function (params, pos, siblingsCount, currBlock, tParams, paramsType) {
+        if (!this._findDecls(params, currBlock) && paramsType === 'object') {
+            if (params.content) {
+                currBlock = params.block ? params : currBlock;
+                params.content = this._buildWithNewCtx(params.content, 1, 1, currBlock);
+            }
+            return params;
+        } else {
+            var ctx = new BEM.JSON._ctx(
+                params,
+                pos,
+                siblingsCount,
+                currBlock,
+                tParams
+            );
+            ctx._globalThread = this._globalThread;
+            ctx._threads = 0;
+            return ctx.build();
+        }
     };
 
 
