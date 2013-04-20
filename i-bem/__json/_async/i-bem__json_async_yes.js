@@ -62,7 +62,7 @@ var count = 0;
             elem = params.elem,
             decl = block && BEM.JSON._decls[block];
         if (decl) {
-            if (block && elem) {
+            if (elem) {
                 return Boolean(decl._elem || decl['_elem__' + elem]);
             } else {
                 return Boolean(decl._block);
@@ -72,13 +72,29 @@ var count = 0;
         }
     };
 
+    BEM.JSON._ctx.prototype._buildSkippedContent = function (params, pos, siblingsCount, currBlock, tParams) {
+        var newCurrBlock, contentType;
+        if (params.content) {
+            contentType = BEM.JSON._type(params.content);
+            if (
+                (!params.block) || //not block (elem or array)
+                (currBlock && (params.block === currBlock.block) && params.elem) //elem with defined block param
+            ) {
+                newCurrBlock = currBlock;
+            } else {
+                newCurrBlock = params;
+            }
+            if (contentType === 'object') {
+                params.content._parent = params;
+            }
+            params.content = this._buildWithNewCtx(params.content, 1, 1, newCurrBlock, params, contentType);
+        }
+    };
+
 
     BEM.JSON._ctx.prototype._buildWithNewCtx = function (params, pos, siblingsCount, currBlock, tParams, paramsType) {
-        if (!this._findDecls(params, currBlock) && paramsType === 'object') {
-            if (params.content) {
-                currBlock = params.block ? params : currBlock;
-                params.content = this._buildWithNewCtx(params.content, 1, 1, currBlock);
-            }
+        if (paramsType === 'object' && !this._findDecls(params, currBlock)) {
+            this._buildSkippedContent(params, pos, siblingsCount, currBlock, tParams);
             return params;
         } else {
             var ctx = new BEM.JSON._ctx(

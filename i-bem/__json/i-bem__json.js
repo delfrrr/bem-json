@@ -554,6 +554,8 @@ if (typeof BEM === 'undefined') {
 
         _ctx: Ctx,
 
+        _type: type,
+
         /**
          * Set declarations
          *
