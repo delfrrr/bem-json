@@ -255,7 +255,7 @@ if (typeof BEM === 'undefined') {
                 name = args[0],
                 val = args[1],
                 force = args[2];
-            if (typeof val === 'undefined') {
+            if (arguments.length < 2) {
                 return properties[name];
             }
             if (force || !(properties.hasOwnProperty(name))) {
